@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road Network Path Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        select, button {
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .road-info {
+            background: #e0e0e0;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Road Network Path Finder</h1>
+
+        <div class="form-group">
+            <label for="source">Select Source Intersection:</label>
+            <select id="source">
+                <option value="Alkapuri Circle">Alkapuri Circle</option>
+                <option value="Kala Ghoda Circle">Kala Ghoda Circle</option>
+                <option value="Akota Bridge Junction">Akota Bridge Junction</option>
+                <option value="Jetalpur Bridge Junction">Jetalpur Bridge Junction</option>
+                <option value="Nyay Mandir Intersection">Nyay Mandir Intersection</option>
+                <option value="Waghodia Chowkdi">Waghodia Chowkdi</option>
+                <option value="Parul University">Parul University</option>
+                <option value="National Highway 8">National Highway 8</option>
+                <option value="Vadodara-Halol Highway">Vadodara-Halol Highway</option>
+                <option value="Vadodara-Mumbai Expressway">Vadodara-Mumbai Expressway</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="destination">Select Destination Intersection:</label>
+            <select id="destination">
+                <option value="Alkapuri Circle">Alkapuri Circle</option>
+                <option value="Kala Ghoda Circle">Kala Ghoda Circle</option>
+                <option value="Akota Bridge Junction">Akota Bridge Junction</option>
+                <option value="Jetalpur Bridge Junction">Jetalpur Bridge Junction</option>
+                <option value="Nyay Mandir Intersection">Nyay Mandir Intersection</option>
+                <option value="Waghodia Chowkdi">Waghodia Chowkdi</option>
+                <option value="Parul University">Parul University</option>
+                <option value="National Highway 8">National Highway 8</option>
+                <option value="Vadodara-Halol Highway">Vadodara-Halol Highway</option>
+                <option value="Vadodara-Mumbai Expressway">Vadodara-Mumbai Expressway</option>
+            </select>
+        </div>
+
+        <button onclick="findPath()">Find Path</button>
+
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        function findPath() {
+            const source = document.getElementById("source").value;
+            const destination = document.getElementById("destination").value;
+            const resultsContainer = document.getElementById("results");
+            resultsContainer.innerHTML = '';
+
+            if (source === destination) {
+                resultsContainer.innerHTML = "Source and destination cannot be the same.";
+                return;
+            }
+
+            // Fetching path data from the server
+            fetch(`http://127.0.0.1:5000/find_path?source=${source}&destination=${destination}`)
+                .then(response => response.json()) // Parse JSON response
+                .then(data => {
+                    if (data.path) {
+                        // Display path, distance and speed limit info
+                        resultsContainer.innerHTML = `
+                            <h3>Path Found:</h3>
+                            <p>Path: ${data.path.join(' -> ')}</p>
+                            <p><strong>Total Distance:</strong> ${data.total_distance} km</p>
+                            <p><strong>Average Speed Limit:</strong> ${data.avg_speed} km/h</p>
+                        `;
+                    } else {
+                        resultsContainer.innerHTML = "No path found.";
+                    }
+                })
+                .catch(error => {
+                    resultsContainer.innerHTML = "Error: Unable to fetch data from the server.";
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+
+</body>
+</html>
